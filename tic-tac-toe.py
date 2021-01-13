@@ -7,27 +7,22 @@ scr.keypad(True)
 scrsize=scr.getmaxyx()
 curses.start_color()
 cloc='home'
-print=lambda a:[scr.addstr(0,0,a),scr.refresh()]
+home_opts=['PLAY','EXIT']
 curses.init_pair(1,curses.COLOR_BLACK,curses.COLOR_GREEN)
 curses.init_pair(2,curses.COLOR_BLACK,curses.COLOR_RED)
 curses.init_pair(3,curses.COLOR_WHITE,curses.COLOR_BLACK)
-
 def cwrite(color,y,x,txt):
     scr.attron(color)
     scr.addstr(y,x,txt)
     scr.attroff(color)
-
 def homescreen():
     scr.clear()
-    select=curses.color_pair(1)
-    if copt=='play':
-        cwrite(select,scrsize[0]//2,scrsize[1]//2,'PLAY')
-        scr.addstr(scrsize[0]//2+1,scrsize[1]//2,'EXIT')
-    if copt=='exit':
-        scr.addstr(scrsize[0]//2,scrsize[1]//2,'PLAY')
-        cwrite(select,scrsize[0]//2+1,scrsize[1]//2,'EXIT')
+    for i in enumerate(home_opts):
+        if i[0] in range(len(home_opts)//2+1):yadjust=-(len(home_opts)//2-(i[0]+1))
+        else:yadjust=(i[0]+1)-(len(home_opts)//2)
+        color=curses.color_pair(1)if copt==i[1]else curses.color_pair(3)
+        cwrite(color,scrsize[0]//2+yadjust,scrsize[1]//2,i[1])
     scr.refresh()
-
 def gamerender():
     scr.clear()
     y,x=scrsize
@@ -76,38 +71,39 @@ def gamerender():
                 cwrite(color,y+i,x+9,s[9:]+' ')
             continue
         scr.addstr(y+i,x,s)
+    sym='(X)'if cplayer=='1'else'(O)'
     if cplayer=='tie':scr.addstr(y+10,x+5,'Tie!')
     elif cplayer[:3]=='win':scr.addstr(y+10,x,f'Player {cplayer[-1]} has won!')
-    else:scr.addstr(y+10,x,f'Player {cplayer}\'s Turn')
+    else:scr.addstr(y+10,x,f'Player {cplayer}\'s Turn'+sym)
+    scr.addstr(y+11,x-10,'Press \'q\' to return to Home Screen')
     scr.refresh()
-
-copt='play'    
+copt='PLAY'    
 homescreen()
 while 1:
     if cloc=='home':
         key = scr.getch()
-        if key == curses.KEY_DOWN and copt=='play':
-            copt='exit'
-            homescreen()
-        elif key == curses.KEY_UP and copt=='exit':
-            copt='play'
-            homescreen()
+        if key == curses.KEY_UP:
+            copt=home_opts[home_opts.index(copt)-1]
+        elif key == curses.KEY_DOWN:
+            copt=home_opts[(home_opts.index(copt)+1)%len(home_opts)]
         elif key == curses.KEY_ENTER or key == 10:
-            if copt=='play':
+            if copt=='PLAY':
                 cloc='play'
                 cplayer='1'
                 copt='a1'
                 game=[[' 'for i in' '*3]for i in ' '*3]
                 moves=0
                 gamerender()
-            if copt=='exit':
+                continue
+            if copt=='EXIT':
                 scr.clear()
                 break
+        homescreen()
     if cloc=='play':
         key = scr.getch()
         if key == 113:
             cloc='home'
-            copt='play'
+            copt='PLAY'
             scr.clear()
             homescreen()
             continue
@@ -126,7 +122,6 @@ while 1:
             moves+=1
         if moves==9:
             cplayer='tie'
-            copt='None'
         if moves>2:
             p1,p2,p3=game
             p4,p5,p6=[[j[i] for j in game]for i in range(3)]
