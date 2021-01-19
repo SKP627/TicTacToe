@@ -14,5 +14,5 @@ That can mess your terminal, use the provided exit option in the UI.
 ![image](https://github.com/SKP627/TicTacToe/blob/main/Images/home_screen.jpg)
 ![image](https://github.com/SKP627/TicTacToe/blob/main/Images/play1.jpg)
 ![image](https://github.com/SKP627/TicTacToe/blob/main/Images/play2.jpg)
-![image](https://github.com/SKP627/TicTacToe/blob/main/Images/play3.jpg.jpg)
-![image](https://github.com/SKP627/TicTacToe/blob/mainImages/end_screen.jpg)
+![image](https://github.com/SKP627/TicTacToe/blob/main/Images/play3.jpg)
+![image](https://github.com/SKP627/TicTacToe/blob/main/Images/end_screen.jpg)
