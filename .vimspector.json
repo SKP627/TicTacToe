@@ -1,0 +1,18 @@
+{
+  "configurations": {
+    "TicTacToe": {
+      "adapter": "debugpy",
+      "configuration": {
+        "name": "TicTacToe",
+        "type": "python",
+        "request": "launch",
+        "cwd": "{workspaceRoot}",
+        "python": "/usr/bin/python",
+        "stopOnEntry": true,
+        "console": "integratedTerminal",
+        "debugOptions": [],
+        "program": "{workspaceRoot}/sample.py"
+      }
+    }
+  }
+}

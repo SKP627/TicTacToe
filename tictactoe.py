@@ -80,6 +80,7 @@ def gamerender():
 copt='PLAY'    
 homescreen()
 while 1:
+    if __name__!='__main__':break
     if cloc=='home':
         key = scr.getch()
         if key == curses.KEY_UP:
