@@ -8,3 +8,11 @@ and its pre-installed in Linux and Mac.
 
 And at any costs dont use *Ctrl-C* to exit.
 That can mess your terminal, use the provided exit option in the UI.
+
+**Some Images:**
+
+![image](https://github.com/SKP627/Images/home_screen.jpg)
+![image](https://github.com/SKP627/Images/play1.jpg)
+![image](https://github.com/SKP627/Images/play2.jpg)
+![image](https://github.com/SKP627/Images/play3.jpg.jpg)
+![image](https://github.com/SKP627/Images/end_screen.jpg)
