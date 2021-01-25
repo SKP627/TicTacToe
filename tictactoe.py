@@ -7,7 +7,7 @@ scr.keypad(True)
 scrsize=scr.getmaxyx()
 curses.start_color()
 cloc='home'
-home_opts=['PLAY','EXIT']
+home_opts=['PLAY','PLAY vs AI','EXIT']
 curses.init_pair(1,curses.COLOR_BLACK,curses.COLOR_GREEN)
 curses.init_pair(2,curses.COLOR_BLACK,curses.COLOR_RED)
 curses.init_pair(3,curses.COLOR_WHITE,curses.COLOR_BLACK)
@@ -21,7 +21,7 @@ def homescreen():
         if i[0] in range(len(home_opts)//2+1):yadjust=-(len(home_opts)//2-(i[0]+1))
         else:yadjust=(i[0]+1)-(len(home_opts)//2)
         color=curses.color_pair(1)if copt==i[1]else curses.color_pair(3)
-        cwrite(color,scrsize[0]//2+yadjust,scrsize[1]//2,i[1])
+        cwrite(color,scrsize[0]//2+yadjust,scrsize[1]//2-(len(i[1])//2),i[1])
     scr.refresh()
 def gamerender():
     scr.clear()
@@ -79,6 +79,8 @@ def gamerender():
     scr.refresh()
 copt='PLAY'    
 homescreen()
+
+import random
 while 1:
     if __name__!='__main__':break
     if cloc=='home':
@@ -96,38 +98,72 @@ while 1:
                 moves=0
                 gamerender()
                 continue
+            if copt=='PLAY vs AI':
+                cloc='playvsai'
+                cplayer='1'
+                copt='a1'
+                game=[[' 'for i in' '*3]for i in' '*3]
+                moves=0
+                gamerender()
+                continue
             if copt=='EXIT':
                 scr.clear()
                 break
         homescreen()
-    if cloc=='play':
-        key = scr.getch()
-        if key == 113:
-            cloc='home'
-            copt='PLAY'
-            scr.clear()
-            homescreen()
-            continue
-        if cplayer not in ['1','2']:continue
-        if key == curses.KEY_UP:
-            copt=copt.replace('b','a').replace('c','b')
-        if key == curses.KEY_DOWN:
-            copt=copt.replace('b','c').replace('a','b')
-        if key == curses.KEY_RIGHT:
-            copt=copt.replace('2','3').replace('1','2')
-        if key == curses.KEY_LEFT:
-            copt=copt.replace('2','1').replace('3','2')
-        if (key == curses.KEY_ENTER or key == 10)and game[int(copt[0].replace('a','0').replace('b','1').replace('c','2'))][int(copt[1])-1]==' ' and cplayer in ['1','2']:
-            game[int(copt[0].replace('a','0').replace('b','1').replace('c','2'))][int(copt[1])-1]=cplayer.replace('1','X').replace('2','O')
-            cplayer=cplayer.replace('1','a').replace('2','1').replace('a','2')
+    if cloc=='play' or cloc=='playvsai':
+        if cloc=='playvsai':aiplay=True if cplayer=='2'else False
+        if (cloc=='playvsai'and not aiplay) or cloc=='play':
+            key = scr.getch()
+            if key == 113:
+                cloc='home'
+                copt='PLAY'
+                scr.clear()
+                homescreen()
+                continue
+            if cplayer not in ['1','2']:continue
+            if key == curses.KEY_UP:
+                copt=copt.replace('b','a').replace('c','b')
+            if key == curses.KEY_DOWN:
+                copt=copt.replace('b','c').replace('a','b')
+            if key == curses.KEY_RIGHT:
+                copt=copt.replace('2','3').replace('1','2')
+            if key == curses.KEY_LEFT:
+                copt=copt.replace('2','1').replace('3','2')
+            if (key == curses.KEY_ENTER or key == 10)and game[int(copt[0].replace('a','0').replace('b','1').replace('c','2'))][int(copt[1])-1]==' ' and cplayer in ['1','2']:
+                game[int(copt[0].replace('a','0').replace('b','1').replace('c','2'))][int(copt[1])-1]=cplayer.replace('1','X').replace('2','O')
+                moves+=1
+                cplayer=cplayer.replace('1','a').replace('2','1').replace('a','2')
+                aiplay=False
+        if cloc=='playvsai'and aiplay:
             moves+=1
-        if moves==9:
-            cplayer='tie'
-        if moves>2:
-            p1,p2,p3=game
-            p4,p5,p6=[[j[i] for j in game]for i in range(3)]
-            p7=[game[0][0],game[1][1],game[2][2]]
-            p8=[game[0][2],game[1][1],game[2][0]]  
+            aiplayed=False
+            for i in enumerate([p1,p2,p3,p4,p5,p6,p7,p8]):
+                if (i[1].count('X')==2 or i[1].count('O')==2) and i[1].count(' ')==1:
+                    if i[0]in[0,1,2]:
+                        game[i[0]][i[1].index(' ')]='O'
+                    if i[0]in[3,4,5]:
+                        game[i[1].index(' ')][i[0]-3]='O'
+                    if i[0]==6:
+                        game[i[1].index(' ')][i[1].index(' ')]='O'
+                    if i[0]==7:
+                        game[i[1].index(' ')][2-i[1].index(' ')]='O'
+                    aiplayed=True
+                    break
+            if not aiplayed:
+                r1=random.choice([i[0] for i in enumerate(game)if ' 'in i[1]]or[None])
+                if r1!=None:
+                    rlist=[]
+                    for i in enumerate(game[r1]):
+                        if i[1]==' ':rlist.append(i[0])
+                    game[r1][random.choice(rlist)]='O'
+                    aiplayed=True
+            cplayer='1'
+        p1,p2,p3=game
+        p4,p5,p6=[[j[i] for j in game]for i in range(3)]
+        p7=[game[0][0],game[1][1],game[2][2]]
+        p8=[game[0][2],game[1][1],game[2][0]]
+        if moves>8:cplayer='tie'
+        if moves>4:
             for i in[p1,p2,p3,p4,p5,p6,p7,p8]:
                 if i[0]=='X' and i.count('X')==3:
                     cplayer='win1'
